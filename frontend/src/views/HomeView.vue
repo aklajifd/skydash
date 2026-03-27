@@ -23,6 +23,10 @@
             </div>
         </div>
 
+        <CountryChart :flights="store.liveFlights" />
+
+        <FlightMap :flights="mapFlights" />
+
         <div class="search-bar">
             <InputText
                 v-model="searchQuery"
@@ -69,10 +73,12 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import PrimeButton from 'primevue/button'
 import InputText from 'primevue/inputtext'
+import CountryChart from '../components/CountryChart.vue'
+import FlightMap from '../components/FlightMap.vue'
 
 export default {
     name: 'HomeView',
-    components: { DataTable, Column, PrimeButton, InputText },
+    components: { DataTable, Column, PrimeButton, InputText, CountryChart, FlightMap },
 
     setup() {
         const store = useFlightsStore()
@@ -103,6 +109,11 @@ export default {
                     (f.origin_country && f.origin_country.toLowerCase().includes(query))
             )
         },
+        mapFlights() {
+            return this.store.liveFlights
+                .filter(f => f.latitude && f.longitude)
+                .slice(0, 500)
+        }
     },
 
     mounted() {
