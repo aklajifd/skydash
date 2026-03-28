@@ -3,7 +3,7 @@
         <div class="page-header">
             <h1 class="page-title">
                 <i class="pi pi-globe"></i>
-                Live Flight Dashboard
+                SkyDash Live Flight Dashboard
             </h1>
             <PrimeButton label="Refresh Flights" icon="pi pi-refresh" :loading="store.loading" @click="loadFlights" />
         </div>
