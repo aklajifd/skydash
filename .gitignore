@@ -213,3 +213,7 @@ frontend/.vite/
 # Elastic Beanstalk
 backend/.elasticbeanstalk/
 backend/.ebextensions/*.cfg
+
+# Environment files
+frontend/.env.local
+frontend/.env*.local

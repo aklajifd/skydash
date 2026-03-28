@@ -1,12 +1,13 @@
 # SkyDash ✈️
 
-A full-stack aviation data explorer dashboard built with FastAPI, Vue 3, and PostgreSQL. SkyDash fetches live global flight data from the OpenSky Network API, persists it to a cloud database, and displays it through an interactive dashboard with real-time search, data visualization, and an interactive map.
+A full-stack aviation data explorer dashboard built with FastAPI, Vue 3, and PostgreSQL. SkyDash fetches live global flight data from the AviationStack API, persists it to a cloud database, and displays it through an interactive dashboard with real-time search, data visualization, and an interactive map.
 
 ---
 
 ## Live Demo
-- **Frontend:** *(Coming soon — Netlify/S3 deployment)*
-- **API:** *(Coming soon — Elastic Beanstalk deployment)*
+- **Frontend:** https://d3r43tijueh8sn.cloudfront.net
+- **API:** http://skydash-backend-env.eba-zxgivwnm.us-east-1.elasticbeanstalk.com
+- **API Docs:** http://skydash-backend-env.eba-zxgivwnm.us-east-1.elasticbeanstalk.com/docs
 
 ---
 
@@ -18,7 +19,8 @@ A full-stack aviation data explorer dashboard built with FastAPI, Vue 3, and Pos
 - **SQLAlchemy** — ORM for database interaction
 - **Alembic** — database migration management
 - **PostgreSQL** — relational database
-- **httpx** — async HTTP client for OpenSky API integration
+- **httpx** — async HTTP client for AviationStack API integration
+- **AviationStack API** — real-time flight data source
 
 ### Frontend
 - **Vue 3** — progressive JavaScript framework
@@ -29,20 +31,21 @@ A full-stack aviation data explorer dashboard built with FastAPI, Vue 3, and Pos
 - **Leaflet** — interactive mapping
 
 ### Cloud & DevOps
-- **AWS RDS** — managed PostgreSQL hosting
-- **AWS Elastic Beanstalk** — backend deployment
-- **AWS S3 + CloudFront** — frontend hosting and CDN
+- **AWS RDS** — managed PostgreSQL hosting (db.t3.micro, free tier)
+- **AWS Elastic Beanstalk** — backend API deployment with auto-scaling
+- **AWS S3** — frontend static file hosting
+- **AWS CloudFront** — global CDN with HTTPS for frontend delivery
 - **GitHub Actions** — CI/CD pipeline
 
 ---
 
 ## Features
 
-- 🌍 **Live Flight Data** — fetches real-time global aircraft data from OpenSky Network
+- 🌍 **Live Flight Data** — fetches real-time global aircraft data from AviationStack API
 - 💾 **Data Persistence** — saves flight snapshots to PostgreSQL with timestamps
-- 📊 **Country Chart** — bar chart showing top 10 countries by active flight count
+- 📊 **Country Chart** — bar chart showing top 10 airlines by active flight count
 - 🗺️ **Interactive Map** — Leaflet map with clickable aircraft markers and flight details
-- 🔍 **Real-time Search** — filter flights by callsign, ICAO24, or country instantly
+- 🔍 **Real-time Search** — filter flights by callsign, ICAO24, or airline instantly
 - 📋 **Flight History** — browse historically recorded flights from the database
 - 🌙 **Dark Mode** — persistent dark/light theme toggle
 
@@ -50,13 +53,15 @@ A full-stack aviation data explorer dashboard built with FastAPI, Vue 3, and Pos
 
 ## Architecture
 ```
-OpenSky Network API
+AviationStack API
         │
         ▼
    FastAPI Backend  ──────────────────►  PostgreSQL (AWS RDS)
+   (AWS Elastic Beanstalk)
         │
         ▼
    Vue 3 Frontend
+   (AWS S3 + CloudFront)
         │
         ├── Live Dashboard (chart + map + table)
         └── History Page (database query)
@@ -72,6 +77,19 @@ OpenSky Network API
 - PostgreSQL 17+
 - Git
 
+### Environment Variables
+
+**Backend** — set these in your environment or AWS Elastic Beanstalk:
+```
+DATABASE_URL=postgresql://user:password@host:port/dbname
+AVIATIONSTACK_KEY=your_aviationstack_api_key
+```
+
+**Frontend** — create a `.env.local` file in the `frontend` folder:
+```
+VITE_API_BASE_URL=http://127.0.0.1:8000
+```
+
 ### Backend Setup
 ```bash
 # Clone the repository
@@ -86,7 +104,6 @@ source venv/bin/activate       # Mac/Linux
 # Install dependencies
 pip install -r requirements.txt
 
-# Configure your database connection in database.py
 # Run database migrations
 alembic upgrade head
 
@@ -117,7 +134,7 @@ Frontend available at `http://localhost:5173`
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/` | Health check |
-| GET | `/flights/` | Fetch live flights from OpenSky and save to DB |
+| GET | `/flights/` | Fetch live flights from AviationStack and save to DB |
 | GET | `/flights/history` | Query 100 most recent saved flights |
 
 ---
@@ -129,20 +146,22 @@ skydash/
 │   ├── main.py              # FastAPI app entry point
 │   ├── database.py          # Database connection and session management
 │   ├── requirements.txt     # Python dependencies
+│   ├── Procfile             # Elastic Beanstalk startup command
+│   ├── .ebextensions/       # Elastic Beanstalk configuration
 │   ├── routers/
 │   │   └── flights.py       # Flight API routes
 │   ├── models/
 │   │   ├── flight.py        # Pydantic model (API schema)
 │   │   └── flight_model.py  # SQLAlchemy model (database schema)
 │   ├── services/
-│   │   └── opensky.py       # OpenSky Network API integration
+│   │   └── opensky.py       # AviationStack API integration
 │   └── migrations/          # Alembic database migrations
 └── frontend/
     ├── src/
     │   ├── App.vue           # Root component
     │   ├── main.js           # App entry point
     │   ├── components/
-    │   │   ├── NavBar.vue    # Navigation bar with dark mode toggle
+    │   │   ├── NavBar.vue        # Navigation bar with dark mode toggle
     │   │   ├── CountryChart.vue  # Bar chart component
     │   │   └── FlightMap.vue     # Leaflet map component
     │   ├── views/
@@ -154,6 +173,23 @@ skydash/
     │   └── router/
     │       └── index.js          # Vue Router configuration
     └── package.json
+```
+
+---
+
+## Deployment
+
+### Backend (AWS Elastic Beanstalk)
+```bash
+cd backend
+eb deploy
+```
+
+### Frontend (AWS S3)
+```bash
+cd frontend
+npm run build
+aws s3 sync dist s3://skydash-frontend-daniel --delete
 ```
 
 ---
