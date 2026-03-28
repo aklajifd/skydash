@@ -1,26 +1,35 @@
 import httpx
+import os
 from typing import List
 from models.flight import Flight
 
-OPENSKY_URL = "https://opensky-network.org/api/states/all"
+AVIATIONSTACK_URL = "http://api.aviationstack.com/v1/flights"
+AVIATIONSTACK_KEY = os.environ.get("AVIATIONSTACK_KEY", "")
 
 async def get_flights() -> List[Flight]:
-    async with httpx.AsyncClient(verify=False) as client:
-        response = await client.get(OPENSKY_URL)
+    async with httpx.AsyncClient(timeout=30.0) as client:
+        response = await client.get(
+            AVIATIONSTACK_URL,
+            params={
+                "access_key": AVIATIONSTACK_KEY,
+                "limit": 100,
+                "flight_status": "active"
+            }
+        )
         response.raise_for_status()
         data = response.json()
 
     flights = []
-    for state in data["states"]:
+    for item in data.get("data", []):
         flight = Flight(
-            icao24=state[0],
-            callsign=state[1],
-            origin_country=state[2],
-            longitude=state[5],
-            latitude=state[6],
-            altitude=state[7],
-            velocity=state[9],
-            heading=state[10]
+            icao24=item.get("flight", {}).get("icao") or item.get("flight", {}).get("iata") or "unknown",
+            callsign=item.get("flight", {}).get("iata"),
+            origin_country=item.get("airline", {}).get("name") or "Unknown",
+            longitude=item.get("live", {}).get("longitude") if item.get("live") else None,
+            latitude=item.get("live", {}).get("latitude") if item.get("live") else None,
+            altitude=item.get("live", {}).get("altitude") if item.get("live") else None,
+            velocity=item.get("live", {}).get("speed_horizontal") if item.get("live") else None,
+            heading=item.get("live", {}).get("direction") if item.get("live") else None
         )
         flights.append(flight)
 
