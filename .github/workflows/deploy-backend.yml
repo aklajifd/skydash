@@ -26,6 +26,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Zip backend
+        run: |
+          cd backend
+          zip -r ../backend.zip . -x "venv/*" -x "__pycache__/*" -x "*.pyc" -x ".elasticbeanstalk/*"
+
       - name: Deploy to Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v22
         with:
@@ -35,4 +40,4 @@ jobs:
           environment_name: ${{ secrets.EB_ENV_NAME }}
           region: ${{ secrets.AWS_REGION }}
           version_label: ${{ github.sha }}
-          deployment_package: backend
+          deployment_package: backend.zip
