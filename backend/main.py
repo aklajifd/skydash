@@ -24,4 +24,5 @@ app.include_router(flights.router)
 
 @app.get("/")
 def read_root():
+    # SkyDash API health check
     return {"message": "SkyDash API is running"}
