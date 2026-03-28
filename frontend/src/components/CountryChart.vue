@@ -63,6 +63,7 @@ export default {
         },
 
         chartOptions() {
+            const isDark = document.documentElement.classList.contains('dark-mode')
             return {
                 responsive: true,
                 plugins: {
@@ -72,10 +73,12 @@ export default {
                 scales: {
                     y: {
                         beginAtZero: true,
-                        grid: { color: '#f1f5f9' }
+                        grid: { color: isDark ? '#334155' : '#f1f5f9' },
+                        ticks: { color: isDark ? '#94a3b8' : '#64748b' }
                     },
                     x: {
-                        grid: { display: false }
+                        grid: { display: false },
+                        ticks: { color: isDark ? '#94a3b8' : '#64748b' }
                     }
                 }
             }
@@ -86,7 +89,7 @@ export default {
 
 <style scoped>
 .chart-card {
-    background: white;
+    background: var(--card-bg, white);
     border-radius: 12px;
     padding: 1.5rem;
     margin-bottom: 2rem;
@@ -96,10 +99,15 @@ export default {
 .chart-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #0f172a;
+    color: var(--title-color, #0f172a);
     margin-bottom: 1.5rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+:global(.dark-mode) {
+    --card-bg: #1e293b;
+    --title-color: #e2e8f0;
 }
 </style>

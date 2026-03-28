@@ -28,11 +28,8 @@
         <FlightMap :flights="mapFlights" />
 
         <div class="search-bar">
-            <InputText
-                v-model="searchQuery"
-                placeholder="Search by callsign, ICA024, or country..."
-                class="search-input"
-            />
+            <InputText v-model="searchQuery" placeholder="Search by callsign, ICA024, or country..."
+                class="search-input" />
         </div>
 
         <div v-if="store.error" class="error-message">
@@ -139,10 +136,14 @@ export default {
 .page-title {
     font-size: 1.75rem;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--title-color, #0f172a);
     display: flex;
     align-items: center;
     gap: 0.75rem;
+}
+
+:global(.dark-mode) {
+    --title-color: #e2e8f0;
 }
 
 .stats-row {
@@ -206,5 +207,13 @@ export default {
     width: 100%;
     padding: 0.75rem;
     font-size: 1rem;
+}
+
+:global(.dark-mode) .page-title {
+    color: #e2e8f0;
+}
+
+:global(.dark-mode) .page-header {
+    color: #e2e8f0;
 }
 </style>

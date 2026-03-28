@@ -5,12 +5,7 @@
         <i class="pi pi-history"></i>
         Flight History
       </h1>
-      <PrimeButton
-        label="Refresh History"
-        icon="pi pi-refresh"
-        :loading="store.loading"
-        @click="loadHistory"
-      />
+      <PrimeButton label="Refresh History" icon="pi pi-refresh" :loading="store.loading" @click="loadHistory" />
     </div>
 
     <div v-if="store.error" class="error-message">
@@ -22,14 +17,7 @@
       Loading flight history...
     </div>
 
-    <DataTable
-      v-else
-      :value="store.historyFlights"
-      :paginator="true"
-      :rows="20"
-      stripedRows
-      class="flights-table"
-    >
+    <DataTable v-else :value="store.historyFlights" :paginator="true" :rows="20" stripedRows class="flights-table">
       <Column field="icao24" header="ICAO24" />
       <Column field="callsign" header="Callsign" />
       <Column field="origin_country" header="Country" />
@@ -100,10 +88,14 @@ export default {
 .page-title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--title-color, #0f172a);
   display: flex;
   align-items: center;
   gap: 0.75rem;
+}
+
+:global(.dark-mode) {
+  --title-color: #e2e8f0;
 }
 
 .error-message {
@@ -128,5 +120,13 @@ export default {
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+:global(.dark-mode) .page-title {
+  color: #e2e8f0;
+}
+
+:global(.dark-mode) .page-header {
+  color: #e2e8f0;
 }
 </style>

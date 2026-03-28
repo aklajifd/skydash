@@ -1,5 +1,5 @@
 <template>
-  <nav class="navbar">
+  <nav :class="['navbar', { 'dark-mode': themeStore.isDarkMode }]">
     <div class="navbar-brand">
       <i class="pi pi-send" style="font-size: 1.5rem"></i>
       <span class="brand-name">SkyDash</span>
@@ -7,13 +7,23 @@
     <div class="navbar-links">
       <RouterLink to="/" class="nav-link">Dashboard</RouterLink>
       <RouterLink to="/history" class="nav-link">History</RouterLink>
+      <button class="theme-toggle" @click="themeStore.toggleDarkMode">
+        <i :class="themeStore.isDarkMode ? 'pi pi-sun' : 'pi pi-moon'"></i>
+      </button>
     </div>
   </nav>
 </template>
 
 <script>
+import { useThemeStore } from '../stores/theme'
+
 export default {
-  name: 'NavBar'
+  name: 'NavBar',
+
+  setup() {
+    const themeStore = useThemeStore()
+    return { themeStore }
+  }
 }
 </script>
 
@@ -43,6 +53,7 @@ export default {
 
 .navbar-links {
   display: flex;
+  align-items: center;
   gap: 2rem;
 }
 
@@ -55,5 +66,25 @@ export default {
 
 .nav-link:hover {
   color: #38bdf8;
+}
+
+.theme-toggle {
+  background: none;
+  border: 1px solid #334155;
+  color: #cbd5e1;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.theme-toggle:hover {
+  background-color: #1e293b;
+  color: #38bdf8;
+  border-color: #38bdf8;
 }
 </style>
